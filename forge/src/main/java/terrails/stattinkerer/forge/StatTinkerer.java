@@ -135,7 +135,6 @@ public class StatTinkerer {
                                 String listStr;
                                 if (element instanceof Number) {
                                     listStr = list.stream().map(Object::toString).collect(Collectors.joining(", "));
-                                    comment += "Default: [ %s ]".formatted(listStr);
                                 } else {
                                     listStr = list.stream()
                                             .map(o -> '"' + o.toString() + '"')
