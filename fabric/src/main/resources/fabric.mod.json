@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "id": "stattinkerer",
+  "version": "${version}",
+
+  "name": "Stat Tinkerer",
+  "description": "Keep various stats on death, prevent eating and tinker with vanilla health system.",
+  "authors": [ "Terrails" ],
+
+  "license": "MIT",
+  "contact": {
+    "sources": "https://github.com/Terrails/stat-tinkerer",
+    "issues": "https://github.com/Terrails/stat-tinkerer/issues",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/stat-tinkerer"
+  },
+
+  "icon": "stattinkerer.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [ "terrails.stattinkerer.fabric.StatTinkerer" ]
+  },
+
+  "mixins": [
+    "stattinkerer.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "fabric": "*",
+    "minecraft": ">=1.19.4",
+    "java": ">=17"
+  }
+}

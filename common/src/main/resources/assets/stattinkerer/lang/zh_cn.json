@@ -1,0 +1,7 @@
+{
+  "effect.stattinkerer.no_appetite": "没有胃口",
+  "health.stattinkerer.death_remove": "哎呀,你失去了 %s 个心!",
+  "health.stattinkerer.item_add": "你获得了 %s 个心!",
+  "health.stattinkerer.item_lose": "你失去了 %s 个心!",
+  "health.stattinkerer.threshold": "您的最低生命值已设为 %s 个心!"
+}
