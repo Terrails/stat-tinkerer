@@ -1,14 +1,11 @@
 package terrails.stattinkerer.config;
 
 import com.electronwill.nightconfig.core.EnumGetMethod;
-import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Lists;
 import terrails.stattinkerer.CStatTinkerer;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.NavigableSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Configuration {
 
@@ -121,11 +118,11 @@ public class Configuration {
                 20, 1, Integer.MAX_VALUE
         );
 
-        public final ConfigOption<List<OnChangeReset>> onChangeReset = ConfigOption.defineRestrictedList(
+        public final ConfigOption<List<String>> onChangeReset = ConfigOption.defineRestrictedList(
                 "health.system.additional.configChangeReset",
                 "Config options which when changed should be considered for max health reset in an already created world",
-                Arrays.stream(OnChangeReset.values()).toList(), Arrays.stream(OnChangeReset.values()).toList(),
-                o -> o instanceof OnChangeReset
+                OnChangeReset.NAME_MAP.keySet().stream().toList(), OnChangeReset.NAME_MAP.keySet().stream().toList(),
+                o -> o instanceof String s && OnChangeReset.NAME_MAP.containsKey(s.toUpperCase(Locale.ROOT))
         );
 
         public final ConfigOption<Boolean> healthChangeMessage = ConfigOption.define(
@@ -142,14 +139,14 @@ public class Configuration {
                 false
         );
 
-        public final ConfigOption<NavigableSet<Integer>> thresholds = ConfigOption.defineList(
+        public final ConfigOption<List<Integer>> thresholds = ConfigOption.defineList(
                 "health.system.additional.healthThresholds",
                 """
                         Values which, when reached, move the lowest health of the player to the achieved value. Requires the use of deathDecreasedHealth.
                         Example: If a player starts at 10 health and reaches a threshold of 16 using regenerative items or similar, the lowest max health will move to 16 health.
                         Lowest threshold value can be non-removable, meaning that max health will not decrease until a player reaches health that is over the lowest threshold.
                         To use it make the lowest value negative.""",
-                ImmutableSortedSet.of(-8, 16), o -> o instanceof Integer
+                Lists.newArrayList(-8, 16), o -> o instanceof Integer
         );
 
         public final ConfigOption<RegenerativeItemsConsumptionMode> regenerativeItemsConsumptionMode = ConfigOption.defineEnum(
@@ -174,7 +171,9 @@ public class Configuration {
     }
 
     public enum OnChangeReset {
-        MIN_HEALTH, MAX_HEALTH, STARTING_HEALTH
+        MIN_HEALTH, MAX_HEALTH, STARTING_HEALTH;
+
+        public static final Map<String, OnChangeReset> NAME_MAP = Arrays.stream(OnChangeReset.values()).collect(Collectors.toMap(Enum::name, l -> l));
     }
 
     public enum RegenerativeItemsConsumptionMode {

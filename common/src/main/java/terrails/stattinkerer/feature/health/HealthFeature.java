@@ -74,8 +74,8 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                         }
 
                         if (Configuration.HEALTH.hardcoreMode.get() && manager.getHealth() <= 0) {
-                            oldPlayer.setGameMode(GameType.SPECTATOR);
                             manager.reset(newPlayer);
+                            newPlayer.setGameMode(GameType.SPECTATOR);
                         }
                     }
                 }
@@ -117,6 +117,8 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                 for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
                     Matcher matcher = CStatTinkerer.REGENERATIVE_ITEM_REGEX.matcher(itemString);
 
+                    if (!matcher.find()) continue;
+
                     ResourceLocation regName = new ResourceLocation(matcher.group(1));
                     if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(stack.getItem()), regName)) {
                         continue;
@@ -144,6 +146,8 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
             for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
                 Matcher matcher = CStatTinkerer.REGENERATIVE_ITEM_REGEX.matcher(itemString);
+
+                if (!matcher.find()) continue;
 
                 ResourceLocation regName = new ResourceLocation(matcher.group(1));
                 if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(startStack.getItem()), regName)) {

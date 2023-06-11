@@ -1,5 +1,6 @@
 package terrails.stattinkerer.feature.health;
 
+import com.google.common.collect.ImmutableSortedSet;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -23,7 +24,7 @@ public class HealthManagerImpl implements HealthManager {
 
     @Override
     public void update(ServerPlayer playerEntity) {
-        if (!playerEntity.isAlive() || !Configuration.HEALTH.systemEnabled.get()) {
+        if (!Configuration.HEALTH.systemEnabled.get()) {
             return;
         }
 
@@ -39,7 +40,7 @@ public class HealthManagerImpl implements HealthManager {
             this.amount = this.start;
         }
 
-        Integer nearestThreshold = Configuration.HEALTH.thresholds.get().floor(this.amount);
+        Integer nearestThreshold = ImmutableSortedSet.copyOf(Configuration.HEALTH.thresholds.get()).floor(this.amount);
         this.threshold = nearestThreshold != null ? (Math.abs(nearestThreshold) <= this.amount ? Math.abs(nearestThreshold) : nearestThreshold) : 0;
 
         if (this.start == this.max && this.min <= 0 && !Configuration.HEALTH.hardcoreMode.get()) {
@@ -60,12 +61,12 @@ public class HealthManagerImpl implements HealthManager {
 
     @Override
     public boolean setHealth(ServerPlayer playerEntity, int amount) {
-        if (!playerEntity.isAlive() || !Configuration.HEALTH.systemEnabled.get()) {
+        if (!Configuration.HEALTH.systemEnabled.get()) {
             return false;
         }
 
         amount = Mth.clamp(amount, this.min, this.max);
-        if (this.amount != amount) {
+        if (this.amount != amount || amount != Mth.floor(playerEntity.getMaxHealth())) {
             HealthHelper.addModifier(playerEntity, amount);
             // Player health does not seem to decrease even when maxHealth is lower than health
             if (playerEntity.getHealth() > playerEntity.getMaxHealth()) {
@@ -86,16 +87,16 @@ public class HealthManagerImpl implements HealthManager {
 
     @Override
     public boolean addHealth(ServerPlayer playerEntity, int amount, boolean threshold) {
-        if (!playerEntity.isAlive() || !Configuration.HEALTH.systemEnabled.get()) {
+        if (!Configuration.HEALTH.systemEnabled.get()) {
             return false;
         }
 
         int prevThreshold = this.threshold;
         int prevHealth = this.amount;
-        amount = Mth.clamp(this.amount + amount, this.min, this.max);
-
         int min = Math.max(this.min, threshold ? this.threshold : 0);
-        if (amount < min || amount > this.max) {
+        amount = Mth.clamp(this.amount + amount, min, this.max);
+
+        if (this.amount == amount) {
             return false;
         }
 
@@ -179,7 +180,8 @@ public class HealthManagerImpl implements HealthManager {
     }
 
     private boolean hasConfigChanged() {
-        for (Configuration.OnChangeReset value : Configuration.HEALTH.onChangeReset.get()) {
+        for (String strValue : Configuration.HEALTH.onChangeReset.get()) {
+            Configuration.OnChangeReset value = Configuration.OnChangeReset.NAME_MAP.get(strValue);
             switch (value) {
                 case MIN_HEALTH -> {
                     if (Configuration.HEALTH.minHealth.get() != this.min) {
