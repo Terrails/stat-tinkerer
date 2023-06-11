@@ -50,7 +50,7 @@ public class HungerFeature implements PlayerStateEvents.Clone, PlayerStateEvents
         if (player.hasEffect(STMobEffects.NO_APPETITE)) {
             FoodProperties food = stack.getItem().getFoodProperties();
             if (food != null && player.canEat(food.canAlwaysEat())) {
-                return InteractionResultHolder.fail(ItemStack.EMPTY);
+                return InteractionResultHolder.fail(stack);
             }
         }
         return InteractionResultHolder.pass(ItemStack.EMPTY);
