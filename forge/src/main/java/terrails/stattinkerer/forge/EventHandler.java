@@ -26,24 +26,16 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
-        boolean isEnd = !event.isWasDeath();
         ServerPlayer newPlayer = (ServerPlayer) event.getEntity();
         ServerPlayer oldPlayer = (ServerPlayer) event.getOriginal();
 
-        ExperienceFeature.INSTANCE.onPlayerClone(isEnd, newPlayer, oldPlayer);
-        HungerFeature.INSTANCE.onPlayerClone(isEnd, newPlayer, oldPlayer);
-        HealthFeature.INSTANCE.onPlayerClone(isEnd, newPlayer, oldPlayer);
+        ExperienceFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
+        HungerFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
+        HealthFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
 
 //        if (ModList.get().isLoaded("toughasnails")) {
 //            TANFeature.INSTANCE.onPlayerClone(isEnd, newPlayer, oldPlayer);
 //        }
-    }
-
-    @SubscribeEvent
-    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-        ServerPlayer player = (ServerPlayer) event.getEntity();
-        HungerFeature.INSTANCE.onPlayerRespawn(player);
-        HealthFeature.INSTANCE.onPlayerRespawn(player);
     }
 
     @SubscribeEvent
