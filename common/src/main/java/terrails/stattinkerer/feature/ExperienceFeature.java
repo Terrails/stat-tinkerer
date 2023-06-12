@@ -12,8 +12,8 @@ public class ExperienceFeature implements PlayerStateEvents.Clone, PlayerExpDrop
     public static final ExperienceFeature INSTANCE = new ExperienceFeature();
 
     @Override
-    public void onPlayerClone(boolean isEnd, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
-        if (!isEnd && Configuration.EXPERIENCE.keep.get()) {
+    public void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
+        if (wasDeath && Configuration.EXPERIENCE.keep.get()) {
             boolean keepInventory = newPlayer.getCommandSenderWorld().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
             if (!keepInventory) {
                 newPlayer.experienceLevel = oldPlayer.experienceLevel;

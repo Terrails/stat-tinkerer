@@ -1,21 +1,25 @@
-package terrails.stattinkerer.fabric;
+package terrails.stattinkerer.quilt;
 
 import com.electronwill.nightconfig.core.ConfigSpec;
 import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.WritingMode;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.loader.api.QuiltLoader;
+import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
+import org.quiltmc.qsl.base.api.util.TriState;
+import org.quiltmc.qsl.entity.effect.api.StatusEffectEvents;
+import org.quiltmc.qsl.entity.effect.api.StatusEffectRemovalReason;
+import org.quiltmc.qsl.entity.event.api.ServerPlayerEntityCopyCallback;
+import org.quiltmc.qsl.networking.api.ServerPlayConnectionEvents;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.STMobEffects;
 import terrails.stattinkerer.config.ConfigOption;
-import terrails.stattinkerer.fabric.mobeffect.NoAppetiteMobEffect;
 import terrails.stattinkerer.feature.ExperienceFeature;
 import terrails.stattinkerer.feature.HungerFeature;
 import terrails.stattinkerer.feature.health.HealthFeature;
+import terrails.stattinkerer.quilt.mobeffect.NoAppetiteMobEffect;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -34,7 +38,7 @@ public class StatTinkerer implements ModInitializer {
     public static CommentedFileConfig FILE_CONFIG;
 
     @Override
-    public void onInitialize() {
+    public void onInitialize(ModContainer mod) {
         STMobEffects.NO_APPETITE = NoAppetiteMobEffect.registerEffect();
         setupConfig();
         registerEvents();
@@ -43,7 +47,7 @@ public class StatTinkerer implements ModInitializer {
     private static void setupConfig() {
         final String fileName = CStatTinkerer.MOD_ID + ".toml";
 
-        final Path configDir = FabricLoader.getInstance().getConfigDir();
+        final Path configDir = QuiltLoader.getConfigDir();
         final Path configPath = configDir.resolve(fileName);
 
         final ConfigSpec spec = new ConfigSpec();
@@ -154,15 +158,21 @@ public class StatTinkerer implements ModInitializer {
 
     private static void registerEvents() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> HealthFeature.INSTANCE.onPlayerJoinServer(handler.player));
-        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            ExperienceFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
-            HungerFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
-            HealthFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
+        ServerPlayerEntityCopyCallback.EVENT.register((newPlayer, oldPlayer, wasDeath) -> {
+            ExperienceFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
+            HungerFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
+            HealthFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
         });
         EventHandler.ITEM_INTERACTION_USE.register(HungerFeature.INSTANCE);
         EventHandler.ITEM_INTERACTION_USE.register(HealthFeature.INSTANCE);
         EventHandler.ITEM_INTERACTION_COMPLETED.register(HealthFeature.INSTANCE);
         EventHandler.BLOCK_INTERACTION.register(HungerFeature.INSTANCE);
         EventHandler.EXPERIENCE_DROP.register(ExperienceFeature.INSTANCE);
+        StatusEffectEvents.SHOULD_REMOVE.register((entity, effectInstance, reason) -> {
+            if (reason == StatusEffectRemovalReason.DRANK_MILK && effectInstance.getEffect() == STMobEffects.NO_APPETITE) {
+                return TriState.FALSE;
+            }
+            return TriState.DEFAULT;
+        });
     }
 }

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "mixin": [
+    "stattinkerer.mixins.json"
+  ],
+  "minecraft": {
+    "environment": "*"
+  },
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "stattinkerer",
+    "version": "${version}",
+
+    "metadata": {
+      "name": "Stat Tinkerer",
+      "description": "Keep various stats on death, prevent eating and tinker with vanilla health system to make it harder.",
+      "contributors": {
+        "Terrails": "Owner"
+      },
+      "contact": {
+        "sources": "https://github.com/Terrails/stat-tinkerer",
+        "issues": "https://github.com/Terrails/stat-tinkerer/issues",
+        "homepage": "https://www.curseforge.com/minecraft/mc-mods/stat-tinkerer"
+      },
+      "license": "MIT",
+      "icon": "stattinkerer.png"
+    },
+
+    "intermediate_mappings": "net.fabricmc:intermediary",
+
+    "entrypoints": {
+      "init": [
+        "terrails.stattinkerer.quilt.StatTinkerer"
+      ]
+    },
+
+    "depends": [
+      {
+        "id": "quilt_loader",
+        "version": "*"
+      },
+      {
+        "id": "quilt_base",
+        "version": "*"
+      },
+      {
+        "id": "minecraft",
+        "version": ">=1.20"
+      }
+    ]
+  }
+}

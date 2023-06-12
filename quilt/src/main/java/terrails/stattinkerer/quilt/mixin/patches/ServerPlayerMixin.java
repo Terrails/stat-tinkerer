@@ -1,4 +1,4 @@
-package terrails.stattinkerer.fabric.mixin.patches;
+package terrails.stattinkerer.quilt.mixin.patches;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -8,8 +8,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import terrails.stattinkerer.api.health.HealthManager;
-import terrails.stattinkerer.fabric.mixin.interfaces.HealthManagerAccessor;
 import terrails.stattinkerer.feature.health.HealthHelper;
+import terrails.stattinkerer.quilt.mixin.interfaces.HealthManagerAccessor;
 import terrails.stattinkerer.feature.health.HealthManagerImpl;
 
 import java.util.Optional;

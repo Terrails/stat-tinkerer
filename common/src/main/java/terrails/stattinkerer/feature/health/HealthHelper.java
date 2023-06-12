@@ -13,6 +13,7 @@ public class HealthHelper {
 
     public static final UUID HEALTH_MODIFIER_UUID = UUID.fromString("b4720be1-df42-4347-9625-34152fb82b3f");
 
+    public static final String TAG_GROUP = CStatTinkerer.MOD_ID + ":health";
     public static final String TAG_ADDITIONAL_HEALTH = CStatTinkerer.MOD_ID + ":additional_health";
     public static final String TAG_MAX_HEALTH = CStatTinkerer.MOD_ID + ":max_health";
     public static final String TAG_MIN_HEALTH = CStatTinkerer.MOD_ID + ":min_health";

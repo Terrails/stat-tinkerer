@@ -18,13 +18,17 @@ import terrails.stattinkerer.feature.event.BlockInteractionEvent;
 import terrails.stattinkerer.feature.event.ItemInteractionEvents;
 import terrails.stattinkerer.feature.event.PlayerStateEvents;
 
-public class HungerFeature implements PlayerStateEvents.Clone, PlayerStateEvents.Respawn, ItemInteractionEvents.Use, BlockInteractionEvent {
+public class HungerFeature implements PlayerStateEvents.Clone, ItemInteractionEvents.Use, BlockInteractionEvent {
 
     public static final HungerFeature INSTANCE = new HungerFeature();
 
     @Override
-    public void onPlayerClone(boolean isEnd, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
-        if (!isEnd) {
+    public void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
+        if (wasDeath) {
+            int duration = Configuration.HUNGER.noAppetiteDuration.get();
+            if (duration > 0 && !newPlayer.isCreative() && !newPlayer.isSpectator()) {
+                newPlayer.addEffect(new MobEffectInstance(STMobEffects.NO_APPETITE, duration * 20, 0, false, false, true));
+            }
 
             if (Configuration.HUNGER.keepHunger.get()) {
                 int value = Math.max(Configuration.HUNGER.lowestHunger.get(), oldPlayer.getFoodData().getFoodLevel());
@@ -35,13 +39,6 @@ public class HungerFeature implements PlayerStateEvents.Clone, PlayerStateEvents
                 float value = Math.max(Configuration.HUNGER.lowestSaturation.get(), oldPlayer.getFoodData().getSaturationLevel());
                 newPlayer.getFoodData().setSaturation(value);
             }
-        }
-    }
-
-    @Override
-    public void onPlayerRespawn(ServerPlayer player) {
-        if (Configuration.HUNGER.noAppetiteDuration.get() > 0 && !player.isCreative() && !player.isSpectator()) {
-            player.addEffect(new MobEffectInstance(STMobEffects.NO_APPETITE, Configuration.HUNGER.noAppetiteDuration.get() * 20, 0, false, false, true));
         }
     }
 

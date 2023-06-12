@@ -22,7 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateEvents.Respawn, PlayerStateEvents.Clone, ItemInteractionEvents.Use, ItemInteractionEvents.Completed {
+public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateEvents.Clone, ItemInteractionEvents.Use, ItemInteractionEvents.Completed {
 
     public static final HealthFeature INSTANCE = new HealthFeature();
 
@@ -36,15 +36,10 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
     }
 
     @Override
-    public void onPlayerRespawn(ServerPlayer player) {
-        if (Configuration.HEALTH.respawnAmount.get() != 0) {
-            player.setHealth(Configuration.HEALTH.respawnAmount.get());
-        }
-    }
+    public void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
+        if (!wasDeath) return;
 
-    @Override
-    public void onPlayerClone(boolean isEnd, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
-        if (Configuration.HEALTH.systemEnabled.get() && !isEnd) {
+        if (Configuration.HEALTH.systemEnabled.get()) {
 
             Optional<HealthManager> optional = LoaderExpectPlatform.getHealthManager(newPlayer);
             if (optional.isPresent()) {
@@ -80,6 +75,10 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                     }
                 }
             }
+        }
+
+        if (Configuration.HEALTH.respawnAmount.get() != 0) {
+            newPlayer.setHealth(Configuration.HEALTH.respawnAmount.get());
         }
     }
 
