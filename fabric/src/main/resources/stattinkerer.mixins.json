@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
-  "package": "terrails.stattinkerer.fabric.mixin.classes",
+  "package": "terrails.stattinkerer.fabric.mixin.patches",
   "mixins": [
     "LivingEntityMixin",
     "MilkBucketItemMixin",
