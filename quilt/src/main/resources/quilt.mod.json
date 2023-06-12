@@ -29,19 +29,17 @@
     "intermediate_mappings": "net.fabricmc:intermediary",
 
     "entrypoints": {
-      "init": [
-        "terrails.stattinkerer.quilt.StatTinkerer"
-      ]
+      "init": "terrails.stattinkerer.quilt.StatTinkerer"
     },
 
     "depends": [
       {
         "id": "quilt_loader",
-        "version": "*"
+        "versions": ">=0.18.10"
       },
       {
-        "id": "quilt_base",
-        "version": "*"
+        "id": "quilted_fabric_api",
+        "versions": ">=7.0.0"
       },
       {
         "id": "minecraft",
