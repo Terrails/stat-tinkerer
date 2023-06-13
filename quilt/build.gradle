@@ -2,8 +2,6 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-version = rootProject.mod_quilt_version
-
 repositories {
     maven { url "https://maven.quiltmc.org/repository/release/" }
 }
