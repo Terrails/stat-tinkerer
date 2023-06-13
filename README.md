@@ -24,6 +24,7 @@ Experience:
 Hunger:
 - Retain hunger level after death
 - Lowest value: To prevent respawning with no hunger, this can be set to a reasonable value.
+- No Appetite status effect: Prevents eating while active
 
 Saturation:
 - Retain saturation level after death
