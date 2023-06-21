@@ -10,10 +10,12 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import terrails.stattinkerer.feature.ExperienceFeature;
 import terrails.stattinkerer.feature.HungerFeature;
 import terrails.stattinkerer.feature.health.HealthFeature;
+import terrails.stattinkerer.forge.feature.TANFeature;
 
 @Mod.EventBusSubscriber
 public class EventHandler {
@@ -33,9 +35,9 @@ public class EventHandler {
         HungerFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
         HealthFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
 
-//        if (ModList.get().isLoaded("toughasnails")) {
-//            TANFeature.INSTANCE.onPlayerClone(isEnd, newPlayer, oldPlayer);
-//        }
+        if (ModList.get().isLoaded("toughasnails")) {
+            TANFeature.INSTANCE.onPlayerClone(event.isWasDeath(), newPlayer, oldPlayer);
+        }
     }
 
     @SubscribeEvent

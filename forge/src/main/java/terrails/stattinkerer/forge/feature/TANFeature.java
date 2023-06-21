@@ -1,6 +1,5 @@
 package terrails.stattinkerer.forge.feature;
 
-/*
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -15,9 +14,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
-*/
 
-public class TANFeature {} /*implements PlayerStateEvents.Clone {
+public class TANFeature implements PlayerStateEvents.Clone {
 
     public static TANFeature INSTANCE;
 
@@ -86,8 +84,8 @@ public class TANFeature {} /*implements PlayerStateEvents.Clone {
     }
 
     @Override
-    public void onPlayerClone(boolean isEnd, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
-        if (!isEnd) {
+    public void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
+        if (wasDeath) {
 
             if (ThirstHelper.isThirstEnabled()) {
 
@@ -113,4 +111,3 @@ public class TANFeature {} /*implements PlayerStateEvents.Clone {
         }
     }
 }
-*/

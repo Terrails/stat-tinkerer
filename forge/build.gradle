@@ -24,8 +24,8 @@ dependencies {
     // Forge
     forge "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
 
-    // Tough As Nails - 1.19.4-8.2.0.90
-//    modImplementation "curse.maven:tough-as-nails-246391:4442103"
+    // Tough As Nails - 1.20-9.0.0.91
+    modImplementation "curse.maven:tough-as-nails-246391:4579280"
 
     // Common
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

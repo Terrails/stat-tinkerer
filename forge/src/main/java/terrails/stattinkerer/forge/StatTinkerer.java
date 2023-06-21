@@ -157,9 +157,9 @@ public class StatTinkerer {
             }
         }
 
-//        if (ModList.get().isLoaded("toughasnails")) {
-//            TANFeature.initialize(builder);
-//        }
+        if (ModList.get().isLoaded("toughasnails")) {
+            TANFeature.initialize(builder);
+        }
 
         CONFIG_SPEC = builder.build();
     }
