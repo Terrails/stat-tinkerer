@@ -11,7 +11,7 @@ public interface PlayerStateEvents {
 
     @FunctionalInterface
     interface Clone {
-        void onPlayerClone(boolean isEnd, ServerPlayer newPlayer, ServerPlayer oldPlayer);
+        void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer);
     }
 
 }
