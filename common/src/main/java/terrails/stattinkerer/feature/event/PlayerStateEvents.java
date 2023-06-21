@@ -14,4 +14,9 @@ public interface PlayerStateEvents {
         void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer);
     }
 
+    @FunctionalInterface
+    interface Respawn {
+        void onPlayerRespawn(ServerPlayer player);
+    }
+
 }

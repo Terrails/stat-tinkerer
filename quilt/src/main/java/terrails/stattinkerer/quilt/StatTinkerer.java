@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.file.CommentedFileConfig;
 import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.WritingMode;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.loader.api.QuiltLoader;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
@@ -162,6 +163,12 @@ public class StatTinkerer implements ModInitializer {
             ExperienceFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
             HungerFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
             HealthFeature.INSTANCE.onPlayerClone(wasDeath, newPlayer, oldPlayer);
+        });
+        // Deprecated but has to be used since Quilt has no alternative
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) {
+                HungerFeature.INSTANCE.onPlayerRespawn(newPlayer);
+            }
         });
         EventHandler.ITEM_INTERACTION_USE.register(HungerFeature.INSTANCE);
         EventHandler.ITEM_INTERACTION_USE.register(HealthFeature.INSTANCE);

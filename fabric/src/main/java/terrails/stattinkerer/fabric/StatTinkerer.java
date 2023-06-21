@@ -159,6 +159,11 @@ public class StatTinkerer implements ModInitializer {
             HungerFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
             HealthFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
         });
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            if (!alive) {
+                HungerFeature.INSTANCE.onPlayerRespawn(newPlayer);
+            }
+        });
         EventHandler.ITEM_INTERACTION_USE.register(HungerFeature.INSTANCE);
         EventHandler.ITEM_INTERACTION_USE.register(HealthFeature.INSTANCE);
         EventHandler.ITEM_INTERACTION_COMPLETED.register(HealthFeature.INSTANCE);

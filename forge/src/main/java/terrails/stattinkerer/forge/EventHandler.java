@@ -41,6 +41,13 @@ public class EventHandler {
     }
 
     @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (!event.isEndConquered()) {
+            HungerFeature.INSTANCE.onPlayerRespawn((ServerPlayer) event.getEntity());
+        }
+    }
+
+    @SubscribeEvent
     public static void onItemUseInteraction(PlayerInteractEvent.RightClickItem event) {
         if (!event.isCanceled()) {
             InteractionResultHolder<ItemStack> result = HungerFeature.INSTANCE.onItemUseInteraction(event.getLevel(), event.getEntity(), event.getItemStack(), event.getHand());
