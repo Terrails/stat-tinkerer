@@ -27,7 +27,7 @@ public class LoaderExpectPlatformImpl {
 
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         if (player instanceof HealthManagerAccessor accessor) {
-            return accessor.getHealthManager();
+            return accessor.stattinkerer$getHealthManager();
         } else return Optional.empty();
     }
 

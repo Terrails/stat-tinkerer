@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface HealthManagerAccessor {
 
-    Optional<HealthManager> getHealthManager();
+    Optional<HealthManager> stattinkerer$getHealthManager();
 }

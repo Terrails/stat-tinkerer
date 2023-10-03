@@ -27,7 +27,7 @@ public class MultiPlayerGameModeMixin {
     @Redirect(method = "method_41929",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/item/ItemStack;use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"))
-    private InteractionResultHolder<ItemStack> useInteractionItem(ItemStack instance, Level level, Player player, InteractionHand hand) {
+    private InteractionResultHolder<ItemStack> stattinkerer$useInteractionItem(ItemStack instance, Level level, Player player, InteractionHand hand) {
         InteractionResultHolder<ItemStack> result = EventHandler.ITEM_INTERACTION_USE.invoker().onItemUseInteraction(this.minecraft.level, player, player.getItemInHand(hand), hand);
 
         if (result.getResult() != InteractionResult.PASS) {
@@ -39,7 +39,7 @@ public class MultiPlayerGameModeMixin {
             cancellable = true,
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/player/LocalPlayer;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
-    private void useInteractionBlock(LocalPlayer player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> callback) {
+    private void stattinkerer$useInteractionBlock(LocalPlayer player, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> callback) {
         InteractionResult result = EventHandler.BLOCK_INTERACTION.invoker().onBlockInteraction(this.minecraft.level, player, hand, hitResult);
 
         if (result != InteractionResult.PASS) {

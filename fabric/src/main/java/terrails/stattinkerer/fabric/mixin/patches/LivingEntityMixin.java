@@ -33,7 +33,7 @@ public abstract class LivingEntityMixin extends Entity implements NoAppetiteEffe
     @Redirect(method = "completeUsingItem",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/item/ItemStack;finishUsingItem(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;)Lnet/minecraft/world/item/ItemStack;"))
-    private ItemStack completeUsingItem(ItemStack startStack, Level level, LivingEntity livingEntity) {
+    private ItemStack stattinkerer$completeUsingItem(ItemStack startStack, Level level, LivingEntity livingEntity) {
         ItemStack completedStack = startStack.copy().finishUsingItem(level, livingEntity);
         if (livingEntity instanceof Player player) {
             InteractionResultHolder<ItemStack> result = EventHandler.ITEM_INTERACTION_COMPLETED.invoker().onItemUseInteractionCompleted(level, player, startStack, completedStack);
@@ -51,7 +51,7 @@ public abstract class LivingEntityMixin extends Entity implements NoAppetiteEffe
     }
 
     @Override
-    public boolean removeAllExceptNoAppetite() {
+    public boolean stattinkerer$removeAllExceptNoAppetite() {
         if (this.level().isClientSide()) {
             return false;
         } else {

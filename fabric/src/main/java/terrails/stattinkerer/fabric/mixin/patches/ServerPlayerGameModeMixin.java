@@ -22,7 +22,7 @@ public class ServerPlayerGameModeMixin {
             cancellable = true,
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/world/item/ItemStack;use(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResultHolder;"))
-    private void itemInteraction(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> callback) {
+    private void stattinkerer$itemInteraction(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, CallbackInfoReturnable<InteractionResult> callback) {
         InteractionResultHolder<ItemStack> result = EventHandler.ITEM_INTERACTION_USE.invoker().onItemUseInteraction(level, player, stack, hand);
 
         if (result.getResult() != InteractionResult.PASS) {
@@ -40,7 +40,7 @@ public class ServerPlayerGameModeMixin {
             cancellable = true,
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/server/level/ServerPlayer;getMainHandItem()Lnet/minecraft/world/item/ItemStack;"))
-    private void itemInteraction(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> callback) {
+    private void stattinkerer$itemInteraction(ServerPlayer player, Level level, ItemStack stack, InteractionHand hand, BlockHitResult hitResult, CallbackInfoReturnable<InteractionResult> callback) {
         InteractionResult result = EventHandler.BLOCK_INTERACTION.invoker().onBlockInteraction(level, player, hand, hitResult);
 
         if (result != InteractionResult.PASS) {
