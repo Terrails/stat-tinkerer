@@ -55,8 +55,7 @@ public class StatTinkerer implements ModInitializer {
                         spec.define(option.getPath(), option.getDefault(), option.getOptionValidator());
                     }
                 } catch (InaccessibleObjectException | SecurityException | IllegalAccessException e) {
-                    LOGGER.error("Could not process spec for {} in {}", field.getName(), object.getClass().getName());
-                    e.printStackTrace();
+                    LOGGER.error("Could not process spec for {} in {}", field.getName(), object.getClass().getName(), e);
                 }
             }
         }
@@ -121,8 +120,7 @@ public class StatTinkerer implements ModInitializer {
                                 option.initialize(() -> config.get(option.getPath()), (val) -> config.set(option.getPath(), val));
                             }
                         } catch (InaccessibleObjectException | SecurityException | IllegalAccessException e) {
-                            LOGGER.error("Could not process value for {} in {}", field.getName(), object.getClass().getName());
-                            e.printStackTrace();
+                            LOGGER.error("Could not process value for {} in {}", field.getName(), object.getClass().getName(), e);
                         }
                     }
                 }
@@ -136,16 +134,14 @@ public class StatTinkerer implements ModInitializer {
             } catch (ParsingException e) {
                 config.close();
 
-                LOGGER.error("Failed to load '{}' due to a parsing error.", fileName);
-                e.printStackTrace();
+                LOGGER.error("Failed to load '{}' due to a parsing error.", fileName, e);
 
                 String deformedFile = (CStatTinkerer.MOD_ID + "-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss")) + ".toml");
                 try {
                     Files.move(configPath, configDir.resolve(deformedFile));
                     LOGGER.error("Deformed config file renamed to '{}'", deformedFile);
                 } catch (IOException ee) { // Results in an infinite loop, but considering that everything is broken without a config file, throw an exception and crash
-                    LOGGER.error("Moving deformed config file failed...");
-                    ee.printStackTrace();
+                    LOGGER.error("Moving deformed config file failed...", ee);
                     throw new RuntimeException("Could not initialize '%s' config file.".formatted(fileName));
                 }
             }

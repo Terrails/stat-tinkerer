@@ -89,8 +89,7 @@ public class StatTinkerer {
                     }
 
                 } catch (Exception e) {
-                    LOGGER.error("Could not process value for {} in {}", field.getName(), object.getClass().getName());
-                    e.printStackTrace();
+                    LOGGER.error("Could not process value for {} in {}", field.getName(), object.getClass().getName(), e);
                 }
             }
         }
