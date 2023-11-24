@@ -2,10 +2,6 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
-repositories {
-    maven { url "https://maven.quiltmc.org/repository/release/" }
-}
-
 architectury {
     platformSetupLoomIde()
     loader("quilt")
@@ -24,9 +20,13 @@ configurations {
     developmentQuilt.extendsFrom common
 }
 
+repositories {
+    maven { url "https://maven.quiltmc.org/repository/release/" }
+}
+
 dependencies {
     modImplementation "org.quiltmc:quilt-loader:${rootProject.quilt_loader_version}"
-    modApi "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${rootProject.quilted_fabric_api_version}"
+//    modApi "org.quiltmc.quilted-fabric-api:quilted-fabric-api:${rootProject.quilted_fabric_api_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionQuilt")) { transitive false }
@@ -47,19 +47,16 @@ processResources {
 }
 
 shadowJar {
+    exclude "architectury.common.json"
+
     configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    archiveClassifier = "dev-shadow"
 }
 
 remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    classifier null
-}
-
-jar {
-    classifier "dev"
 }
 
 sourcesJar {
