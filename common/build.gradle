@@ -1,6 +1,6 @@
 architectury {
     // Quilt disabled for now since its stuck on 1.20.1
-    common("fabric", "forge"/*, "quilt"*/)
+    common("fabric", "forge", "neoforge"/*, "quilt"*/)
 }
 
 dependencies {
