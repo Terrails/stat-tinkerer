@@ -8,7 +8,6 @@ import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -57,9 +56,8 @@ public class StatTinkerer {
                     }).copyOnDeath().build()
     );
 
-    public StatTinkerer() {
+    public StatTinkerer(IEventBus bus) {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CONFIG_SPEC);
-        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         MOB_EFFECTS.register(bus);
         DATA_ATTACHMENTS.register(bus);
         bus.addListener(this::setup);
