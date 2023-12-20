@@ -26,6 +26,10 @@ public class LoaderExpectPlatformImpl {
         return QuiltLoader.isDevelopmentEnvironment();
     }
 
+    public static String getLoader() {
+        return "quilt";
+    }
+
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         if (player instanceof HealthManagerAccessor accessor) {
             return accessor.stattinkerer$getHealthManager();

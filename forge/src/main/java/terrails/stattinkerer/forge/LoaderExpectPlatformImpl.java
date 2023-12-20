@@ -23,6 +23,10 @@ public class LoaderExpectPlatformImpl {
 
     public static boolean inDevEnvironment() { return !FMLLoader.isProduction(); }
 
+    public static String getLoader() {
+        return "forge";
+    }
+
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         return player.getCapability(HealthCapability.CAPABILITY).resolve();
     }

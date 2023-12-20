@@ -8,7 +8,6 @@ import net.minecraft.world.item.Item;
 import net.neoforged.fml.loading.FMLLoader;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.health.HealthManager;
-import terrails.stattinkerer.forge.capability.HealthCapability;
 
 import java.util.Optional;
 
@@ -22,6 +21,10 @@ public class LoaderExpectPlatformImpl {
     }
 
     public static boolean inDevEnvironment() { return !FMLLoader.isProduction(); }
+
+    public static String getLoader() {
+        return "neoforge";
+    }
 
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         return player.getCapability(HealthCapability.CAPABILITY).resolve();

@@ -25,6 +25,10 @@ public class LoaderExpectPlatformImpl {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
+    public static String getLoader() {
+        return "fabric";
+    }
+
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         if (player instanceof HealthManagerAccessor accessor) {
             return accessor.stattinkerer$getHealthManager();

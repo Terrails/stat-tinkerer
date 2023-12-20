@@ -22,6 +22,9 @@ public class LoaderExpectPlatform {
     public static boolean inDevEnvironment() { return false; }
 
     @ExpectPlatform
+    public static String getLoader() { throw new AssertionError(); }
+
+    @ExpectPlatform
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
         throw new AssertionError();
     }
