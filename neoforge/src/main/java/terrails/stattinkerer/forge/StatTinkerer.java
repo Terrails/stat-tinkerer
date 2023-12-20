@@ -1,53 +1,72 @@
 package terrails.stattinkerer.forge;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.STMobEffects;
 import terrails.stattinkerer.api.health.HealthManager;
 import terrails.stattinkerer.config.ConfigOption;
+import terrails.stattinkerer.feature.health.HealthManagerImpl;
 import terrails.stattinkerer.forge.mobeffect.NoAppetiteMobEffect;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static terrails.stattinkerer.CStatTinkerer.LOGGER;
 
 @Mod(CStatTinkerer.MOD_ID)
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class StatTinkerer {
 
     public static final ModConfigSpec CONFIG_SPEC;
 
     private static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, CStatTinkerer.MOD_ID);
-    private static final DeferredHolder<MobEffect, NoAppetiteMobEffect> NO_APPETITE = MOB_EFFECTS.register("no_appetite", NoAppetiteMobEffect::new);
+    public static final Supplier<NoAppetiteMobEffect> NO_APPETITE = MOB_EFFECTS.register("no_appetite", NoAppetiteMobEffect::new);
+
+    private static final DeferredRegister<AttachmentType<?>> DATA_ATTACHMENTS = DeferredRegister.create(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, CStatTinkerer.MOD_ID);
+    public static final Supplier<AttachmentType<HealthManager>> HEALTH_DATA = DATA_ATTACHMENTS.register(
+            "health", () -> AttachmentType
+                    .builder(() -> (HealthManager) (new HealthManagerImpl()))
+                    .serialize(new IAttachmentSerializer<CompoundTag, HealthManager>() {
+                        @Override
+                        public HealthManager read(CompoundTag tag) {
+                            HealthManager manager = new HealthManagerImpl();
+                            manager.deserialize(tag);
+                            return manager;
+                        }
+
+                        @Override
+                        public CompoundTag write(HealthManager data) {
+                            CompoundTag tag = new CompoundTag();
+                            data.serialize(tag);
+                            return tag;
+                        }
+                    }).copyOnDeath().build()
+    );
 
     public StatTinkerer() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, CONFIG_SPEC);
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         MOB_EFFECTS.register(bus);
+        DATA_ATTACHMENTS.register(bus);
         bus.addListener(this::setup);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
         STMobEffects.NO_APPETITE = NO_APPETITE.get();
-    }
-
-    @SubscribeEvent
-    public static void registerCapabilities(final RegisterCapabilitiesEvent event) {
-        event.register(HealthManager.class);
     }
 
     static {

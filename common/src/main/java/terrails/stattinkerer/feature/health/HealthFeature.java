@@ -45,14 +45,16 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
             if (optional.isPresent()) {
                 HealthManager manager = optional.get();
 
-                LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, true);
-                LoaderExpectPlatform.getHealthManager(oldPlayer).ifPresent(oldManager -> {
-                    CompoundTag tag = new CompoundTag();
-                    oldManager.serialize(tag);
-                    manager.deserialize(tag);
-                    manager.setHealth(newPlayer, manager.getHealth());
-                });
-                LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, false);
+                if (!LoaderExpectPlatform.getLoader().equals("neoforge")) {
+                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, true);
+                    LoaderExpectPlatform.getHealthManager(oldPlayer).ifPresent(oldManager -> {
+                        CompoundTag tag = new CompoundTag();
+                        oldManager.serialize(tag);
+                        manager.deserialize(tag);
+                        manager.setHealth(newPlayer, manager.getHealth());
+                    });
+                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, false);
+                }
 
                 if (Objects.equals(Configuration.HEALTH.startingHealth.get(), Configuration.HEALTH.maxHealth.get()) && Configuration.HEALTH.minHealth.get() == 0 && !Configuration.HEALTH.hardcoreMode.get()) {
                     manager.update(newPlayer);

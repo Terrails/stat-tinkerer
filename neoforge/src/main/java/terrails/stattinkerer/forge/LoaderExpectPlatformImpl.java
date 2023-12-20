@@ -27,16 +27,10 @@ public class LoaderExpectPlatformImpl {
     }
 
     public static Optional<HealthManager> getHealthManager(ServerPlayer player) {
-        return player.getCapability(HealthCapability.CAPABILITY).resolve();
+        return Optional.of(player.getData(StatTinkerer.HEALTH_DATA));
     }
 
-    public static void reviveInvalidateForgeCapability(Player player, boolean revive) {
-        if (revive) {
-            player.reviveCaps();
-        } else {
-            player.invalidateCaps();
-        }
-    }
+    public static void reviveInvalidateForgeCapability(Player player, boolean revive) {}
 
     public static ResourceLocation getItemRegistryName(Item item) {
         return BuiltInRegistries.ITEM.getKey(item);
