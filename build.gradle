@@ -71,12 +71,12 @@ allprojects {
 
             def repoUrl = "https://github.com/terrails/stat-tinkerer"
             def changes = new StringBuilder("Latest changes ([See all](${repoUrl}/commits/${branch}))\n---")
-            def log = "git log --max-count=30 --pretty=format:\"[%s](${repoUrl}/commit/%H)\"".execute()
+            def log = "git log --max-count=30 --pretty=format:\"* %s ([%h](${repoUrl}/commit/%H))\"".execute()
             log.in.eachLine { line ->
                 if (!line.containsIgnoreCase("version")
                         && !line.containsIgnoreCase("bump")
                         && !line.containsIgnoreCase("update")) { // version change commits should be ignored
-                    changes << "\n* ${line}"
+                    changes << "\n${line}"
                 }
             }
 
