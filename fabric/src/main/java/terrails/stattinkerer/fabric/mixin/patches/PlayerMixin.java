@@ -7,6 +7,7 @@ import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import terrails.stattinkerer.fabric.EventHandler;
+
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
 

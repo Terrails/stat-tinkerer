@@ -27,7 +27,7 @@ public class HealthHelper {
     public static void addModifier(Player player, int amount) {
         AttributeInstance attribute = HealthHelper.getAttribute(player);
         attribute.removeModifier(HEALTH_MODIFIER_UUID);
-        attribute.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER_UUID, CStatTinkerer.MOD_ID, amount - attribute.getBaseValue(), AttributeModifier.Operation.ADDITION));
+        attribute.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER_UUID, CStatTinkerer.MOD_ID, amount - attribute.getBaseValue(), AttributeModifier.Operation.ADD_VALUE));
     }
 
     public static boolean hasModifier(Player player) {

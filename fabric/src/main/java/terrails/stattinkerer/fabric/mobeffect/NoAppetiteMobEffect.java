@@ -1,5 +1,6 @@
 package terrails.stattinkerer.fabric.mobeffect;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +16,7 @@ public class NoAppetiteMobEffect extends MobEffect {
         super(MobEffectCategory.HARMFUL, new Color(72, 120, 68).getRGB());
     }
 
-    public static MobEffect registerEffect() {
-        return Registry.register(BuiltInRegistries.MOB_EFFECT, new ResourceLocation(CStatTinkerer.MOD_ID, "no_appetite"), new NoAppetiteMobEffect());
+    public static Holder<MobEffect> registerEffect() {
+        return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, new ResourceLocation(CStatTinkerer.MOD_ID, "no_appetite"), new NoAppetiteMobEffect());
     }
 }

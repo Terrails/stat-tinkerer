@@ -1,5 +1,7 @@
 package terrails.stattinkerer.feature;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -49,7 +51,7 @@ public class HungerFeature implements PlayerStateEvents.Respawn, PlayerStateEven
     @Override
     public InteractionResultHolder<ItemStack> onItemUseInteraction(Level level, Player player, ItemStack stack, InteractionHand hand) {
         if (player.hasEffect(STMobEffects.NO_APPETITE)) {
-            FoodProperties food = stack.getItem().getFoodProperties();
+            FoodProperties food = stack.get(DataComponents.FOOD);
             if (food != null && player.canEat(food.canAlwaysEat())) {
                 return InteractionResultHolder.fail(stack);
             }
@@ -61,8 +63,7 @@ public class HungerFeature implements PlayerStateEvents.Respawn, PlayerStateEven
     public InteractionResult onBlockInteraction(Level level, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (player.hasEffect(STMobEffects.NO_APPETITE)) {
             Block block = level.getBlockState(hitResult.getBlockPos()).getBlock();
-            // TODO: Add a way to manually define blocks in config and compare with registry name
-            if (block instanceof CakeBlock) {
+            if (block instanceof CakeBlock || Configuration.HUNGER.noAppetiteBlocks.get().contains(BuiltInRegistries.BLOCK.getKey(block))) {
                 return InteractionResult.FAIL;
             }
         }

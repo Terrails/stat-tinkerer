@@ -180,8 +180,7 @@ public class HealthManagerImpl implements HealthManager {
     }
 
     private boolean hasConfigChanged() {
-        for (String strValue : Configuration.HEALTH.onChangeReset.get()) {
-            Configuration.OnChangeReset value = Configuration.OnChangeReset.NAME_MAP.get(strValue);
+        for (Configuration.OnChangeReset value : Configuration.HEALTH.onChangeReset.get()) {
             switch (value) {
                 case MIN_HEALTH -> {
                     if (Configuration.HEALTH.minHealth.get() != this.min) {

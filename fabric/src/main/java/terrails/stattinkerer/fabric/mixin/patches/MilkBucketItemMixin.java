@@ -12,15 +12,12 @@ import terrails.stattinkerer.api.STMobEffects;
 
 @Mixin(MilkBucketItem.class)
 public class MilkBucketItemMixin {
+
     @Redirect(method = "finishUsingItem",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/LivingEntity;removeAllEffects()Z"))
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;removeAllEffects()Z"))
     private boolean stattinkerer$removeEffects(LivingEntity entity, ItemStack stack, Level level, LivingEntity _entity) {
-        if (!level.isClientSide()) {
-            if (entity.hasEffect(STMobEffects.NO_APPETITE)) {
-                return ((NoAppetiteEffectRemoval) entity).stattinkerer$removeAllExceptNoAppetite();
-            } else return entity.removeAllEffects();
-        }
-        return false;
+        if (entity.hasEffect(STMobEffects.NO_APPETITE)) {
+            return ((NoAppetiteEffectRemoval) entity).stattinkerer$removeAllExceptNoAppetite();
+        } else return entity.removeAllEffects();
     }
 }

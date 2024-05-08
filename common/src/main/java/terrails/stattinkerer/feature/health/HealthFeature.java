@@ -1,7 +1,8 @@
 package terrails.stattinkerer.feature.health;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -11,7 +12,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.LoaderExpectPlatform;
 import terrails.stattinkerer.api.health.HealthManager;
 import terrails.stattinkerer.config.Configuration;
@@ -20,7 +20,6 @@ import terrails.stattinkerer.feature.event.PlayerStateEvents;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
 
 public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateEvents.Clone, ItemInteractionEvents.Use, ItemInteractionEvents.Completed {
 
@@ -46,14 +45,12 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                 HealthManager manager = optional.get();
 
                 if (!LoaderExpectPlatform.getLoader().equals("neoforge")) {
-                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, true);
                     LoaderExpectPlatform.getHealthManager(oldPlayer).ifPresent(oldManager -> {
                         CompoundTag tag = new CompoundTag();
                         oldManager.serialize(tag);
                         manager.deserialize(tag);
                         manager.setHealth(newPlayer, manager.getHealth());
                     });
-                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, false);
                 }
 
                 if (Objects.equals(Configuration.HEALTH.startingHealth.get(), Configuration.HEALTH.maxHealth.get()) && Configuration.HEALTH.minHealth.get() == 0 && !Configuration.HEALTH.hardcoreMode.get()) {
@@ -106,7 +103,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
             if (optional.isPresent()) {
                 HealthManager manager = optional.get();
 
-                FoodProperties food = stack.getItem().getFoodProperties();
+                FoodProperties food = stack.get(DataComponents.FOOD);
                 if (food != null && player.canEat(food.canAlwaysEat())) {
                     return result;
                 }
@@ -115,20 +112,13 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                     return result;
                 }
 
-                for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
-                    Matcher matcher = CStatTinkerer.REGENERATIVE_ITEM_REGEX.matcher(itemString);
+                for (Configuration.RegenerativeItem item : Configuration.HEALTH.regenerativeItems.get()) {
 
-                    if (!matcher.find()) continue;
-
-                    ResourceLocation regName = new ResourceLocation(matcher.group(1));
-                    if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(stack.getItem()), regName)) {
+                    if (!BuiltInRegistries.ITEM.getKey(stack.getItem()).equals(item.registryName())) {
                         continue;
                     }
 
-                    int amount = Integer.parseInt(matcher.group(2));
-                    boolean bypass = itemString.endsWith(":");
-
-                    if (manager.addHealth(player, amount, bypass)) {
+                    if (manager.addHealth(player, item.amount(), item.bypass())) {
                         ItemStack resultStack = stack.copy();
                         resultStack.shrink(1);
                         result = InteractionResultHolder.success(resultStack);
@@ -145,20 +135,13 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
         InteractionResultHolder<ItemStack> result = InteractionResultHolder.pass(ItemStack.EMPTY);
         if (Configuration.HEALTH.systemEnabled.get() && (_player instanceof ServerPlayer player) && !player.isCreative() && !player.isSpectator()) {
 
-            for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
-                Matcher matcher = CStatTinkerer.REGENERATIVE_ITEM_REGEX.matcher(itemString);
+            for (Configuration.RegenerativeItem item : Configuration.HEALTH.regenerativeItems.get()) {
 
-                if (!matcher.find()) continue;
-
-                ResourceLocation regName = new ResourceLocation(matcher.group(1));
-                if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(startStack.getItem()), regName)) {
+                if (!BuiltInRegistries.ITEM.getKey(startStack.getItem()).equals(item.registryName())) {
                     continue;
                 }
 
-                int amount = Integer.parseInt(matcher.group(2));
-                boolean bypass = itemString.endsWith(":");
-
-                LoaderExpectPlatform.getHealthManager(player).ifPresent(manager -> manager.addHealth(player, amount, bypass));
+                LoaderExpectPlatform.getHealthManager(player).ifPresent(manager -> manager.addHealth(player, item.amount(), item.bypass()));
 
                 if (ItemStack.matches(startStack, endStack)) {
                     ItemStack resultStack = endStack.copy();
