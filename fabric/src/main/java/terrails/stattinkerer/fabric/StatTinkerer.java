@@ -35,6 +35,7 @@ public class StatTinkerer implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        CStatTinkerer.setup(new PlatformFunctionsImpl());
         STMobEffects.NO_APPETITE = NoAppetiteMobEffect.registerEffect();
         setupConfig();
         registerEvents();

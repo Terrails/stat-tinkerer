@@ -1,7 +1,10 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "me.shedaniel.unified-publishing"
+    id 'com.gradleup.shadow'
+    id 'com.modrinth.minotaur'
+    id 'net.darkhax.curseforgegradle'
 }
+
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
 architectury {
     platformSetupLoomIde()
@@ -9,16 +12,34 @@ architectury {
 }
 
 loom {
-    // change server run directory
-    runs.server.runDir("run/server")
+    runs {
+        // set window size to 720p
+        client.setProgramArguments(["--width", "1280", "--height", "720"])
+    }
+
+    mods {
+        main {
+            sourceSet project.sourceSets.main
+            sourceSet project(':common').sourceSets.main
+        }
+    }
 }
 
 configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+    common {
+        canBeResolved = true
+        canBeConsumed = false
+    }
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentNeoForge.extendsFrom common
+
+    // Files in this configuration will be bundled into your mod using the Shadow plugin.
+    // Don't use the `shadow` configuration from the plugin itself as it's meant for excluding files.
+    shadowCommon {
+        canBeResolved = true
+        canBeConsumed = false
+    }
 }
 
 repositories {
@@ -30,67 +51,53 @@ dependencies {
 
     // Common
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge"))
 }
 
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand "version": project.version
     }
 }
 
 shadowJar {
-    exclude "fabric.mod.json"
-    exclude "architectury.common.json"
-
     configurations = [project.configurations.shadowCommon]
-    archiveClassifier = "dev-shadow"
+    archiveClassifier = 'dev-shadow'
+    exclude "architectury.common.json"
+    from rootProject.file("LICENSE")
 }
 
 remapJar {
     input.set shadowJar.archiveFile
-    dependsOn shadowJar
 }
 
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
+tasks.register('publishProduction') {
+    dependsOn([tasks.build])
+    finalizedBy([tasks.modrinth, tasks.publishCurseForge])
 }
 
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "${project.modrinth_id}"
+    versionNumber = "${project.version}"
+    versionName = "[NeoForge] ${project.minecraft_version}-v${project.version}"
+    uploadFile = tasks.remapJar.getArchiveFile().get()
+    gameVersions = [project.minecraft_version]
+    loaders = ["neoforge"]
+    changelog = rootProject.file("CHANGELOG.md").text
 }
 
-unifiedPublishing {
-    project {
-        displayName = "[NeoForge] ${rootProject.minecraft_version}-v${project.version}"
-        gameVersions = [rootProject.minecraft_version]
-        gameLoaders = ["neoforge"]
-        changelog = fetchChangelog()
+tasks.register('publishCurseForge', TaskPublishCurseForge) {
+    apiToken = System.getenv("CURSEFORGE_TOKEN")
+    disableVersionDetection()
 
-        mainPublication tasks.remapJar.getArchiveFile() // main jar
-        secondaryPublication tasks.sourcesJar.getArchiveFile() // sources jar
-
-        var CURSEFORGE_TOKEN = System.getenv("CURSEFORGE_TOKEN")
-        if (CURSEFORGE_TOKEN != null) {
-            curseforge {
-                token = CURSEFORGE_TOKEN
-                id = rootProject.curseforge_id
-                gameVersions.addAll("Client", "Server")
-            }
-        }
-
-        var MODRINTH_TOKEN = System.getenv("MODRINTH_TOKEN")
-        if (MODRINTH_TOKEN != null) {
-            modrinth {
-                token = MODRINTH_TOKEN
-                id = rootProject.modrinth_id
-            }
-        }
-    }
+    def mainFile = upload(project.curseforge_id, tasks.remapJar.getArchiveFile().get())
+    mainFile.displayName = "[NeoForge] ${project.minecraft_version}-v${project.version}"
+    mainFile.releaseType = "release"
+    mainFile.changelog = rootProject.file("CHANGELOG.md").text
+    mainFile.changelogType = "markdown"
+    mainFile.addGameVersion("Client", "Server", project.minecraft_version)
+    mainFile.addModLoader("neoforge")
 }

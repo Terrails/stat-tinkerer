@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[1,)"
+loaderVersion = "[2,)"
 issueTrackerURL = "https://github.com/Terrails/stat-tinkerer"
 license = "MIT"
 
@@ -17,13 +17,13 @@ displayTest = "IGNORE_ALL_VERSION" # ignore everything since its a client only m
 [[dependencies.stattinkerer]]
 modId = "neoforge"
 type = "required"
-versionRange = "[1,)"
+versionRange = "[21.0,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.stattinkerer]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.20,)"
+versionRange = "[1.21,)"
 ordering = "NONE"
 side = "CLIENT"

@@ -1,5 +1,12 @@
 package terrails.stattinkerer.feature.health;
 
+import terrails.stattinkerer.CStatTinkerer;
+import terrails.stattinkerer.api.health.HealthManager;
+import terrails.stattinkerer.config.Configuration;
+import terrails.stattinkerer.feature.CommonHelpers;
+import terrails.stattinkerer.feature.event.ItemInteractionEvents;
+import terrails.stattinkerer.feature.event.PlayerStateEvents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,12 +18,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import terrails.stattinkerer.CStatTinkerer;
-import terrails.stattinkerer.LoaderExpectPlatform;
-import terrails.stattinkerer.api.health.HealthManager;
-import terrails.stattinkerer.config.Configuration;
-import terrails.stattinkerer.feature.event.ItemInteractionEvents;
-import terrails.stattinkerer.feature.event.PlayerStateEvents;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -29,7 +30,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
     @Override
     public void onPlayerJoinServer(ServerPlayer player) {
         if (Configuration.HEALTH.systemEnabled.get()) {
-            LoaderExpectPlatform.getHealthManager(player).ifPresent(manager -> manager.update(player));
+            CStatTinkerer.PLATFORM.getHealthManager(player).ifPresent(manager -> manager.update(player));
         } else {
             HealthHelper.removeModifier(player);
         }
@@ -41,19 +42,17 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
         if (Configuration.HEALTH.systemEnabled.get()) {
 
-            Optional<HealthManager> optional = LoaderExpectPlatform.getHealthManager(newPlayer);
+            Optional<HealthManager> optional = CStatTinkerer.PLATFORM.getHealthManager(newPlayer);
             if (optional.isPresent()) {
                 HealthManager manager = optional.get();
 
-                if (!LoaderExpectPlatform.getLoader().equals("neoforge")) {
-                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, true);
-                    LoaderExpectPlatform.getHealthManager(oldPlayer).ifPresent(oldManager -> {
+                if (!CStatTinkerer.PLATFORM.getLoader().equals("neoforge")) {
+                    CStatTinkerer.PLATFORM.getHealthManager(oldPlayer).ifPresent(oldManager -> {
                         CompoundTag tag = new CompoundTag();
                         oldManager.serialize(tag);
                         manager.deserialize(tag);
                         manager.setHealth(newPlayer, manager.getHealth());
                     });
-                    LoaderExpectPlatform.reviveInvalidateForgeCapability(oldPlayer, false);
                 }
 
                 if (Objects.equals(Configuration.HEALTH.startingHealth.get(), Configuration.HEALTH.maxHealth.get()) && Configuration.HEALTH.minHealth.get() == 0 && !Configuration.HEALTH.hardcoreMode.get()) {
@@ -102,11 +101,11 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                 return result;
             }
 
-            Optional<HealthManager> optional = LoaderExpectPlatform.getHealthManager(player);
+            Optional<HealthManager> optional = CStatTinkerer.PLATFORM.getHealthManager(player);
             if (optional.isPresent()) {
                 HealthManager manager = optional.get();
 
-                FoodProperties food = stack.getItem().getFoodProperties();
+                FoodProperties food = CommonHelpers.getFoodProperties(stack);
                 if (food != null && player.canEat(food.canAlwaysEat())) {
                     return result;
                 }
@@ -120,8 +119,8 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
                     if (!matcher.find()) continue;
 
-                    ResourceLocation regName = new ResourceLocation(matcher.group(1));
-                    if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(stack.getItem()), regName)) {
+                    ResourceLocation regName = ResourceLocation.parse(matcher.group(1));
+                    if (!Objects.equals(CStatTinkerer.PLATFORM.getItemRegistryName(stack.getItem()), regName)) {
                         continue;
                     }
 
@@ -150,15 +149,15 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
                 if (!matcher.find()) continue;
 
-                ResourceLocation regName = new ResourceLocation(matcher.group(1));
-                if (!Objects.equals(LoaderExpectPlatform.getItemRegistryName(startStack.getItem()), regName)) {
+                ResourceLocation regName = ResourceLocation.parse(matcher.group(1));
+                if (!Objects.equals(CStatTinkerer.PLATFORM.getItemRegistryName(startStack.getItem()), regName)) {
                     continue;
                 }
 
                 int amount = Integer.parseInt(matcher.group(2));
                 boolean bypass = itemString.endsWith(":");
 
-                LoaderExpectPlatform.getHealthManager(player).ifPresent(manager -> manager.addHealth(player, amount, bypass));
+                CStatTinkerer.PLATFORM.getHealthManager(player).ifPresent(manager -> manager.addHealth(player, amount, bypass));
 
                 if (ItemStack.matches(startStack, endStack)) {
                     ItemStack resultStack = endStack.copy();

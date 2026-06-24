@@ -1,21 +1,20 @@
-package terrails.stattinkerer.forge;
+package terrails.stattinkerer.neoforge;
 
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+
+import terrails.stattinkerer.feature.ExperienceFeature;
+import terrails.stattinkerer.feature.HungerFeature;
+import terrails.stattinkerer.feature.health.HealthFeature;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
-import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import terrails.stattinkerer.feature.ExperienceFeature;
-import terrails.stattinkerer.feature.HungerFeature;
-import terrails.stattinkerer.feature.health.HealthFeature;
 
-@Mod.EventBusSubscriber
 public class EventHandler {
 
     @SubscribeEvent

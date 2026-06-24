@@ -1,6 +1,7 @@
 package terrails.stattinkerer.feature.health;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 public class HealthHelper {
 
-    public static final UUID HEALTH_MODIFIER_UUID = UUID.fromString("b4720be1-df42-4347-9625-34152fb82b3f");
+    public static ResourceLocation HEALTH_MODIFIER = ResourceLocation.fromNamespaceAndPath(CStatTinkerer.MOD_ID, "health");
 
     public static final String TAG_GROUP = CStatTinkerer.MOD_ID + ":health";
     public static final String TAG_ADDITIONAL_HEALTH = CStatTinkerer.MOD_ID + ":additional_health";
@@ -26,16 +27,17 @@ public class HealthHelper {
 
     public static void addModifier(Player player, int amount) {
         AttributeInstance attribute = HealthHelper.getAttribute(player);
-        attribute.removeModifier(HEALTH_MODIFIER_UUID);
-        attribute.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER_UUID, CStatTinkerer.MOD_ID, amount - attribute.getBaseValue(), AttributeModifier.Operation.ADDITION));
+
+        attribute.removeModifier(HEALTH_MODIFIER);
+        attribute.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER, amount - attribute.getBaseValue(), AttributeModifier.Operation.ADD_VALUE));
     }
 
     public static boolean hasModifier(Player player) {
-        return getAttribute(player).getModifier(HEALTH_MODIFIER_UUID) != null;
+        return getAttribute(player).getModifier(HEALTH_MODIFIER) != null;
     }
 
     public static void removeModifier(Player player) {
-        getAttribute(player).removeModifier(HEALTH_MODIFIER_UUID);
+        getAttribute(player).removeModifier(HEALTH_MODIFIER);
     }
 
     public static void playerMessage(Player player, String key, double health) {

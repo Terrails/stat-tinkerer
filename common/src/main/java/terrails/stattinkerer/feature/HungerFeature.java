@@ -49,7 +49,7 @@ public class HungerFeature implements PlayerStateEvents.Respawn, PlayerStateEven
     @Override
     public InteractionResultHolder<ItemStack> onItemUseInteraction(Level level, Player player, ItemStack stack, InteractionHand hand) {
         if (player.hasEffect(STMobEffects.NO_APPETITE)) {
-            FoodProperties food = stack.getItem().getFoodProperties();
+            FoodProperties food = CommonHelpers.getFoodProperties(stack);
             if (food != null && player.canEat(food.canAlwaysEat())) {
                 return InteractionResultHolder.fail(stack);
             }
