@@ -76,7 +76,7 @@ jobs:
           CHANGELOG_NOTES: ${{ steps.changelog.outputs.notes }}
         run: |
           gh release create "$RELEASE_NAME" \
-            --title "Colorful Hearts v$RELEASE_NAME" \
+            --title "Stat Tinkerer v$RELEASE_NAME" \
             --notes "$CHANGELOG_NOTES" \
             fabric/build/libs/*[0-9].jar \
             neoforge/build/libs/*[0-9].jar
