@@ -52,6 +52,10 @@ dependencies {
     // Common
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge"))
+
+    // Optional Dependencies
+    modImplementation("maven.modrinth:tough-as-nails:${toughasnails_version}-neoforge")
+    modRuntimeOnly("maven.modrinth:glitchcore:${glitchcore_version}-neoforge")
 }
 
 processResources {

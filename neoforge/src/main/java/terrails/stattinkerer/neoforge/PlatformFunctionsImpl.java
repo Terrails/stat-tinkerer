@@ -18,7 +18,7 @@ public class PlatformFunctionsImpl implements PlatformFunctions {
 
     @Override
     public Optional<HealthManager> getHealthManager(ServerPlayer player) {
-        return Optional.of(player.getData(StatTinkerer.HEALTH_DATA));
+        return Optional.of(player.getData(RegistryHandler.HEALTH_DATA));
     }
 
     @Override

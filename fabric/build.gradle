@@ -64,6 +64,9 @@ dependencies {
     
     // Optional Dependencies
     modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
+
+    modImplementation("maven.modrinth:tough-as-nails:${toughasnails_version}-fabric")
+    modRuntimeOnly("maven.modrinth:glitchcore:${glitchcore_version}-fabric")
 }
 
 processResources {
