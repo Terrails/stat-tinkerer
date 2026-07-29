@@ -1,19 +1,17 @@
 package terrails.stattinkerer.neoforge;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-
 import terrails.stattinkerer.feature.ExperienceFeature;
 import terrails.stattinkerer.feature.HungerFeature;
 import terrails.stattinkerer.feature.health.HealthFeature;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 
 public class EventHandler {
 
@@ -43,24 +41,16 @@ public class EventHandler {
     @SubscribeEvent
     public static void onItemUseInteraction(PlayerInteractEvent.RightClickItem event) {
         if (!event.isCanceled()) {
-            InteractionResultHolder<ItemStack> result = HungerFeature.INSTANCE.onItemUseInteraction(event.getLevel(), event.getEntity(), event.getItemStack(), event.getHand());
-            if (result.getResult() != InteractionResult.PASS) {
-
-                if (result.getResult().consumesAction()) {
-                    event.getEntity().setItemInHand(event.getHand(), result.getObject());
-                }
-
+            InteractionResult result = HungerFeature.INSTANCE.onItemUseInteraction(event.getLevel(), event.getEntity(), event.getItemStack(), event.getHand());
+            if (result != null) {
+                event.setCancellationResult(result);
                 event.setCanceled(true);
                 return;
             }
 
             result = HealthFeature.INSTANCE.onItemUseInteraction(event.getLevel(), event.getEntity(), event.getItemStack(), event.getHand());
-            if (result.getResult() != InteractionResult.PASS) {
-
-                if (result.getResult().consumesAction()) {
-                    event.getEntity().setItemInHand(event.getHand(), result.getObject());
-                }
-
+            if (result != null) {
+                event.setCancellationResult(result);
                 event.setCanceled(true);
             }
         }
@@ -69,21 +59,21 @@ public class EventHandler {
     @SubscribeEvent
     public static void onItemUseInteractionCompleted(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntity() instanceof Player player) {
-
-            InteractionResultHolder<ItemStack> result = HealthFeature.INSTANCE.onItemUseInteractionCompleted(player.level(), player, event.getItem(), event.getResultStack());
-            if (result.getResult() != InteractionResult.PASS) {
-
-                if (result.getResult().consumesAction()) {
-                    event.setResultStack(result.getObject());
-                }
+            ItemStack result = HealthFeature.INSTANCE.onItemUseInteractionCompleted(player.level(), player, event.getItem(), event.getResultStack());
+            if (result != null) {
+                event.setResultStack(result);
             }
         }
     }
 
     @SubscribeEvent
     public static void onBlockInteraction(PlayerInteractEvent.RightClickBlock event) {
-        InteractionResult result = HungerFeature.INSTANCE.onBlockInteraction(event.getLevel(), event.getEntity(), event.getHand(), event.getHitVec());
-        event.setCanceled(result == InteractionResult.FAIL);
+        var level = event.getLevel();
+        var blockState = level.getBlockState(event.getPos());
+        var result = HungerFeature.INSTANCE.onBlockInteraction(blockState, level, event.getEntity(), event.getHitVec());
+        if (result == InteractionResult.FAIL) {
+            event.setCanceled(true);
+        }
     }
 
     @SubscribeEvent

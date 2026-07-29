@@ -1,33 +1,28 @@
 package terrails.stattinkerer.feature.health;
 
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.health.HealthManager;
 import terrails.stattinkerer.config.Configuration;
 import terrails.stattinkerer.feature.CommonHelpers;
-import terrails.stattinkerer.feature.event.ItemInteractionEvents;
-import terrails.stattinkerer.feature.event.PlayerStateEvents;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.UseAnim;
-import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.Level;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 
-public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateEvents.Clone, ItemInteractionEvents.Use, ItemInteractionEvents.Completed {
+public class HealthFeature {
 
     public static final HealthFeature INSTANCE = new HealthFeature();
 
-    @Override
     public void onPlayerJoinServer(ServerPlayer player) {
         if (Configuration.HEALTH.systemEnabled.get()) {
             CStatTinkerer.PLATFORM.getHealthManager(player).ifPresent(manager -> manager.update(player));
@@ -36,7 +31,6 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
         }
     }
 
-    @Override
     public void onPlayerClone(boolean wasDeath, ServerPlayer newPlayer, ServerPlayer oldPlayer) {
         if (!wasDeath) return;
 
@@ -48,9 +42,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
                 if (!CStatTinkerer.PLATFORM.getLoader().equals("neoforge")) {
                     CStatTinkerer.PLATFORM.getHealthManager(oldPlayer).ifPresent(oldManager -> {
-                        CompoundTag tag = new CompoundTag();
-                        oldManager.serialize(tag);
-                        manager.deserialize(tag);
+                        manager.copyFrom(oldManager);
                         manager.setHealth(newPlayer, manager.getHealth());
                     });
                 }
@@ -83,9 +75,8 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
         }
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> onItemUseInteraction(Level level, Player _player, ItemStack stack, InteractionHand hand) {
-        InteractionResultHolder<ItemStack> result = InteractionResultHolder.pass(ItemStack.EMPTY);
+    public InteractionResult onItemUseInteraction(Level level, Player _player, ItemStack stack, InteractionHand hand) {
+        InteractionResult result = InteractionResult.PASS;
         if (Configuration.HEALTH.systemEnabled.get() && (_player instanceof ServerPlayer player) && !player.isCreative() && !player.isSpectator()) {
 
             /*
@@ -110,7 +101,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                     return result;
                 }
 
-                if (stack.getUseAnimation() == UseAnim.DRINK) {
+                if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
                     return result;
                 }
 
@@ -119,7 +110,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
                     if (!matcher.find()) continue;
 
-                    ResourceLocation regName = ResourceLocation.parse(matcher.group(1));
+                    Identifier regName = Identifier.parse(matcher.group(1));
                     if (!Objects.equals(CStatTinkerer.PLATFORM.getItemRegistryName(stack.getItem()), regName)) {
                         continue;
                     }
@@ -130,7 +121,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                     if (manager.addHealth(player, amount, bypass)) {
                         ItemStack resultStack = stack.copy();
                         resultStack.shrink(1);
-                        result = InteractionResultHolder.success(resultStack);
+                        result = InteractionResult.SUCCESS;
                     }
                     break;
                 }
@@ -139,9 +130,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
         return result;
     }
 
-    @Override
-    public InteractionResultHolder<ItemStack> onItemUseInteractionCompleted(Level level, Player _player, ItemStack startStack, ItemStack endStack) {
-        InteractionResultHolder<ItemStack> result = InteractionResultHolder.pass(ItemStack.EMPTY);
+    public ItemStack onItemUseInteractionCompleted(Level level, Player _player, ItemStack startStack, ItemStack endStack) {
         if (Configuration.HEALTH.systemEnabled.get() && (_player instanceof ServerPlayer player) && !player.isCreative() && !player.isSpectator()) {
 
             for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
@@ -149,7 +138,7 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
 
                 if (!matcher.find()) continue;
 
-                ResourceLocation regName = ResourceLocation.parse(matcher.group(1));
+                Identifier regName = Identifier.parse(matcher.group(1));
                 if (!Objects.equals(CStatTinkerer.PLATFORM.getItemRegistryName(startStack.getItem()), regName)) {
                     continue;
                 }
@@ -162,11 +151,11 @@ public class HealthFeature implements PlayerStateEvents.JoinServer, PlayerStateE
                 if (ItemStack.matches(startStack, endStack)) {
                     ItemStack resultStack = endStack.copy();
                     resultStack.shrink(1);
-                    return InteractionResultHolder.success(resultStack);
+                    return resultStack;
                 }
                 break;
             }
         }
-        return result;
+        return null;
     }
 }

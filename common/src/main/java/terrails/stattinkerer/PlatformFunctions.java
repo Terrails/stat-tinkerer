@@ -1,9 +1,9 @@
 package terrails.stattinkerer;
 
-import terrails.stattinkerer.api.health.HealthManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
+import terrails.stattinkerer.api.health.HealthManager;
 
 import java.util.Optional;
 
@@ -13,5 +13,5 @@ public interface PlatformFunctions {
 
     Optional<HealthManager> getHealthManager(ServerPlayer player);
 
-    ResourceLocation getItemRegistryName(Item item);
+    Identifier getItemRegistryName(Item item);
 }

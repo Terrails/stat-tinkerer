@@ -6,7 +6,6 @@ import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import com.electronwill.nightconfig.core.io.ParsingException;
 import com.electronwill.nightconfig.core.io.WritingMode;
 import net.fabricmc.loader.api.FabricLoader;
-
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.config.ConfigOption;
 
@@ -26,45 +25,44 @@ import static terrails.stattinkerer.CStatTinkerer.LOGGER;
 public class ConfigHandler {
 
     private static final String FILE_NAME = CStatTinkerer.MOD_ID + ".toml";
+    private static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve(FILE_NAME);
+
+    public static final CommentedFileConfig CONFIG = CommentedFileConfig.builder(CONFIG_PATH)
+            .sync()
+            .autoreload()
+            .onFileNotFound(FileNotFoundAction.CREATE_EMPTY)
+            .writingMode(WritingMode.REPLACE)
+            .build();
 
     public static void setupConfig(List<Object> compatConfigSources) {
-        Path configDir = FabricLoader.getInstance().getConfigDir();
-        Path configPath = configDir.resolve(FILE_NAME);
-
         List<ConfigOption<?>> configOptions = collectConfigOptions(compatConfigSources);
         ConfigSpec spec = new ConfigSpec();
         configOptions.forEach(e -> spec.define(e.getPath(), e.getDefault(), e.getOptionValidator()));
 
         while (true) {
             LOGGER.debug("Initializing {} config file", FILE_NAME);
-            CommentedFileConfig config = CommentedFileConfig.builder(configPath)
-                    .sync()
-                    .autoreload()
-                    .onFileNotFound(FileNotFoundAction.CREATE_EMPTY)
-                    .writingMode(WritingMode.REPLACE)
-                    .build();;
-
             try {
                 LOGGER.info("Loading {} config file", FILE_NAME);
-                config.load();
+                CONFIG.load();
 
-                correctConfig(config, spec);
-                applyConfigOptions(config, spec, configOptions);
+                correctConfig(CONFIG, spec);
+                applyConfigOptions(CONFIG, spec, configOptions);
 
                 // Leaving it open in order to be able to get updated values and save again
-                config.save();
+                CONFIG.save();
                 LOGGER.info("Successfully loaded {} config file", FILE_NAME);
                 break;
             } catch (ParsingException e) {
                 LOGGER.error("Failed to load '{}' due to a parsing error.", FILE_NAME, e);
-                config.close();
+                CONFIG.close();
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss");
                 String deformedFile = (CStatTinkerer.MOD_ID + "-" + LocalDateTime.now().format(dateFormatter) + ".toml");
                 try {
-                    Files.move(configPath, configDir.resolve(deformedFile));
+                    Files.move(CONFIG_PATH, FabricLoader.getInstance().getConfigDir().resolve(deformedFile));
                     LOGGER.error("Deformed config file renamed to '{}'", deformedFile);
-                } catch (IOException ee) { // Results in an infinite loop, but considering that everything is broken without a config file, throw an exception and crash
+                } catch (
+                        IOException ee) { // Results in an infinite loop, but considering that everything is broken without a config file, throw an exception and crash
                     LOGGER.error("Moving deformed config file failed...", ee);
                     throw new RuntimeException("Could not initialize '%s' config file.".formatted(FILE_NAME));
                 }
@@ -80,7 +78,8 @@ public class ConfigHandler {
                 switch (action) {
                     case ADD -> LOGGER.info("Missing entry {} = {} added to {}", pathString, correctedValue, FILE_NAME);
                     case REMOVE -> LOGGER.info("Invalid entry {} removed from {}", pathString, FILE_NAME);
-                    case REPLACE -> LOGGER.info("Invalid entry {}: value {} replaced by {} in {}", pathString, incorrectValue, correctedValue, FILE_NAME);
+                    case REPLACE ->
+                            LOGGER.info("Invalid entry {}: value {} replaced by {} in {}", pathString, incorrectValue, correctedValue, FILE_NAME);
                 }
             });
             LOGGER.info("{} correction(s) applied to {} config file", correction, FILE_NAME);

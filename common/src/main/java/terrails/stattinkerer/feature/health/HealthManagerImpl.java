@@ -1,7 +1,8 @@
 package terrails.stattinkerer.feature.health;
 
 import com.google.common.collect.ImmutableSortedSet;
-import net.minecraft.nbt.CompoundTag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import terrails.stattinkerer.api.health.HealthManager;
@@ -9,10 +10,30 @@ import terrails.stattinkerer.config.Configuration;
 
 public class HealthManagerImpl implements HealthManager {
 
+    public static final Codec<HealthManagerImpl> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Codec.INT.fieldOf(HealthHelper.TAG_STARTING_HEALTH).forGetter(h -> h.start),
+                    Codec.INT.fieldOf(HealthHelper.TAG_ADDITIONAL_HEALTH).forGetter(h -> h.amount - 20),
+                    Codec.INT.fieldOf(HealthHelper.TAG_MAX_HEALTH).forGetter(h -> h.max),
+                    Codec.INT.fieldOf(HealthHelper.TAG_MIN_HEALTH).forGetter(h -> h.min),
+                    Codec.INT.fieldOf(HealthHelper.TAG_HEALTH_THRESHOLD).forGetter(h -> h.threshold)
+            ).apply(instance, (start, additionalHealth, max, min, threshold) -> {
+                HealthManagerImpl manager = new HealthManagerImpl();
+                manager.start = start;
+                manager.amount = additionalHealth + 20;
+                manager.max = max;
+                manager.min = min;
+                manager.threshold = threshold;
+                return manager;
+            })
+    );
+
     /** The amount of health the player has */
     private int amount = 0;
-    /** Current health "threshold", can be a negative
-     * number if the health is not being removed */
+    /**
+     * Current health "threshold", can be a negative
+     * number if the health is not being removed
+     */
     private int threshold = 0;
 
     /** The amount of health the player will have in the beginning */
@@ -132,6 +153,21 @@ public class HealthManagerImpl implements HealthManager {
     }
 
     @Override
+    public int getStartingHealth() {
+        return this.start;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return this.max;
+    }
+
+    @Override
+    public int getMinHealth() {
+        return this.min;
+    }
+
+    @Override
     public boolean isHighest() {
         return this.amount == this.max;
     }
@@ -148,35 +184,12 @@ public class HealthManagerImpl implements HealthManager {
     }
 
     @Override
-    public void serialize(CompoundTag tag) {
-        tag.putInt(HealthHelper.TAG_ADDITIONAL_HEALTH, this.amount - 20);
-        tag.putInt(HealthHelper.TAG_MAX_HEALTH, this.max);
-        tag.putInt(HealthHelper.TAG_MIN_HEALTH, this.min);
-        tag.putInt(HealthHelper.TAG_STARTING_HEALTH, this.start);
-        tag.putInt(HealthHelper.TAG_HEALTH_THRESHOLD, this.threshold);
-    }
-
-    @Override
-    public void deserialize(CompoundTag tag) {
-        if (tag.contains(HealthHelper.TAG_STARTING_HEALTH)) {
-            this.start = tag.getInt(HealthHelper.TAG_STARTING_HEALTH);
-        }
-
-        if (tag.contains(HealthHelper.TAG_ADDITIONAL_HEALTH)) {
-            this.amount = tag.getInt(HealthHelper.TAG_ADDITIONAL_HEALTH) + 20;
-        }
-
-        if (tag.contains(HealthHelper.TAG_MAX_HEALTH)) {
-            this.max = tag.getInt(HealthHelper.TAG_MAX_HEALTH);
-        }
-
-        if (tag.contains(HealthHelper.TAG_MIN_HEALTH)) {
-            this.min = tag.getInt(HealthHelper.TAG_MIN_HEALTH);
-        }
-
-        if (tag.contains(HealthHelper.TAG_HEALTH_THRESHOLD)) {
-            this.threshold = tag.getInt(HealthHelper.TAG_HEALTH_THRESHOLD);
-        }
+    public void copyFrom(HealthManager other) {
+        this.amount = other.getHealth();
+        this.threshold = other.getThreshold();
+        this.start = other.getStartingHealth();
+        this.max = other.getMaxHealth();
+        this.min = other.getMinHealth();
     }
 
     private boolean hasConfigChanged() {

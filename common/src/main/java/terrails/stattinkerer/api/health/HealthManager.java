@@ -1,6 +1,5 @@
 package terrails.stattinkerer.api.health;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 
 public interface HealthManager {
@@ -21,9 +20,28 @@ public interface HealthManager {
     int getThreshold();
 
     /**
+     * @return the amount of health the player will have in the beginning
+     * Stored in the player file so health can be reset in case of changes in config
+     */
+    int getStartingHealth();
+
+    /**
+     * @return the highest amount of health a player can have
+     * Stored in the player file so health can be reset in case of changes in config
+     */
+    int getMaxHealth();
+
+    /**
+     * @return the lowest amount of health a player can have
+     * Stored in the player file so health can be reset in case of changes in config
+     */
+    int getMinHealth();
+
+    /**
      * @return is the health at the highest value possible
      */
     boolean isHighest();
+
     /**
      * @return is the health at the lowest value possible
      */
@@ -36,6 +54,7 @@ public interface HealthManager {
 
     /**
      * Changes the players health to the specified value
+     *
      * @param amount the amount of health
      * @return success
      */
@@ -43,6 +62,7 @@ public interface HealthManager {
 
     /**
      * Increases/Decreases players health
+     *
      * @param amount the amount of health to increase (+) or decrease (-)
      * @return success
      */
@@ -50,7 +70,8 @@ public interface HealthManager {
 
     /**
      * Increases/Decreases players health
-     * @param amount the amount of health to increase (+) or decrease (-)
+     *
+     * @param amount    the amount of health to increase (+) or decrease (-)
      * @param threshold should the method care about the threshold when decreasing
      * @return success
      */
@@ -69,14 +90,9 @@ public interface HealthManager {
     void reset(ServerPlayer playerEntity);
 
     /**
-     * Serializes the data to the given NBTTagCompound
-     * @param compound the tag to which the data will be saved
+     * Copies the data from a provided HealthManager instance
+     *
+     * @param other the other HealthManager instance to copy from
      */
-    void serialize(CompoundTag compound);
-
-    /**
-     * Reads the data from the given NBTTagCompound
-     * @param compound the tag from which the data will be read
-     */
-    void deserialize(CompoundTag compound);
+    void copyFrom(HealthManager other);
 }

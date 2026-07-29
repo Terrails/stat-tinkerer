@@ -1,18 +1,16 @@
 package terrails.stattinkerer.feature.health;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import terrails.stattinkerer.CStatTinkerer;
 
-import java.util.UUID;
-
 public class HealthHelper {
 
-    public static ResourceLocation HEALTH_MODIFIER = ResourceLocation.fromNamespaceAndPath(CStatTinkerer.MOD_ID, "health");
+    public static Identifier HEALTH_MODIFIER = CStatTinkerer.location("health");
 
     public static final String TAG_GROUP = CStatTinkerer.MOD_ID + ":health";
     public static final String TAG_ADDITIONAL_HEALTH = CStatTinkerer.MOD_ID + ":additional_health";
