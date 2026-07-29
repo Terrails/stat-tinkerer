@@ -1,13 +1,12 @@
 package terrails.stattinkerer.fabric.compat;
 
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import terrails.stattinkerer.config.ConfigOption;
 import toughasnails.api.temperature.TemperatureHelper;
 import toughasnails.api.temperature.TemperatureLevel;
 import toughasnails.api.thirst.ThirstHelper;
-
-import terrails.stattinkerer.config.ConfigOption;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 
 import java.util.Arrays;
 import java.util.List;
@@ -85,7 +84,7 @@ public class ToughAsNailsFeature {
     }
 
     public void onCopyFrom(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean alive) {
-        if (!alive) return;
+        if (alive) return;
 
         if (ThirstHelper.isThirstEnabled()) {
             if (this.keepThirst.get()) {
