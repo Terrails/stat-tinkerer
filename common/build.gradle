@@ -3,6 +3,6 @@ architectury {
 }
 
 dependencies {
-    modCompileOnly "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
-    api("com.electronwill.night-config:core:${rootProject.nightconfig_version}")
+    compileOnly "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    api("com.electronwill.night-config:core:${project.nightconfig_version}")
 }

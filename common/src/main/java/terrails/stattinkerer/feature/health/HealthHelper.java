@@ -42,6 +42,6 @@ public class HealthHelper {
         if (health == 0) return;
         double messageAmount = health / 2.0;
         Component component = messageAmount % 1 != 0 ? Component.translatable(key, messageAmount) : Component.translatable(key, (int) messageAmount);
-        player.displayClientMessage(component, true);
+        player.sendOverlayMessage(component);
     }
 }

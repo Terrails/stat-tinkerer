@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "stattinkerer",
-  "version": "${version}",
+  "version": "${mod_version}",
 
   "name": "Stat Tinkerer",
   "description": "Keep various stats on death, prevent eating and tinker with vanilla health system.",
@@ -27,8 +27,8 @@
   ],
 
   "depends": {
-    "fabricloader": ">=0.19.3",
-    "fabric": "*",
+    "fabricloader": ">=${min_fabric_loader_version}",
+    "fabric-api": ">=${min_fabric_api_version}",
     "minecraft": ">=1.21"
   }
 }
