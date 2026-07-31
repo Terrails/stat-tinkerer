@@ -14,24 +14,15 @@ public class ClearAllStatusEffectsConsumeEffectMixin {
 
     @WrapMethod(method = "apply")
     private boolean apply$stattinkerer(Level level, ItemStack stack, LivingEntity entity, Operation<Boolean> original) {
-        if (entity.hasEffect(STMobEffects.NO_APPETITE)) {
-            if (level.isClientSide()) {
-                return false;
-            }
-
-            var activeEffects = entity.getActiveEffectsMap().keySet();
-            if (activeEffects.isEmpty()) {
-                return false;
-            }
-
-            for (var effect : activeEffects) {
-                if (effect == STMobEffects.NO_APPETITE) {
-                    continue;
-                }
-
-                entity.removeEffect(effect);
+        var noAppetite = entity.getActiveEffectsMap().get(STMobEffects.NO_APPETITE);
+        if (original.call(level, stack, entity)) {
+            if (noAppetite != null) {
+                // re-add effect for easier compat with anything else that modifies this behavior.
+                // Better than recreating the whole clear effect function that skips just NO_APPETITE
+                entity.addEffect(noAppetite);
             }
             return true;
-        } else return original.call(level, stack, entity);
+        }
+        return false;
     }
 }
