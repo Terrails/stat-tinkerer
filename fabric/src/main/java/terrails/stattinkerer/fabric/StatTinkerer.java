@@ -10,6 +10,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.STMobEffects;
 import terrails.stattinkerer.fabric.event.PlayerDeathEvents;
+import terrails.stattinkerer.fabric.event.PlayerInteractionEvents;
 import terrails.stattinkerer.feature.ExperienceFeature;
 import terrails.stattinkerer.feature.HungerFeature;
 import terrails.stattinkerer.feature.health.HealthFeature;
@@ -46,8 +47,15 @@ public class StatTinkerer implements ModInitializer {
                 HungerFeature.INSTANCE.onPlayerRespawn(newPlayer);
             }
         });
-        ItemEvents.USE.register(((level, player, hand) ->
-                HungerFeature.INSTANCE.onItemUseInteraction(level, player, player.getItemInHand(hand), hand)));
+        ItemEvents.USE.register(((level, player, hand) -> {
+            var stack = player.getItemInHand(hand);
+            var result = HungerFeature.INSTANCE.onItemUseInteraction(level, player, stack, hand);
+            if (result != null) {
+                return result;
+            }
+            return HealthFeature.INSTANCE.onItemUseInteraction(level, player, stack, hand);
+        }));
+        PlayerInteractionEvents.ITEM_USE_COMPLETED.register((HealthFeature.INSTANCE::onItemUseInteractionCompleted));
         BlockEvents.USE_WITHOUT_ITEM.register((
                 (state, level, pos, player, result)
                         -> HungerFeature.INSTANCE.onBlockInteraction(state, level, player, result)));
