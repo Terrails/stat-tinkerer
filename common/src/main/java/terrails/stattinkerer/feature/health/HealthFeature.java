@@ -76,7 +76,6 @@ public class HealthFeature {
     }
 
     public InteractionResult onItemUseInteraction(Level level, Player _player, ItemStack stack, InteractionHand hand) {
-        InteractionResult result = InteractionResult.PASS;
         if (Configuration.HEALTH.systemEnabled.get() && (_player instanceof ServerPlayer player) && !player.isCreative() && !player.isSpectator()) {
 
             /*
@@ -85,11 +84,11 @@ public class HealthFeature {
              */
 
             if (player.isShiftKeyDown() && Configuration.HEALTH.regenerativeItemsConsumptionMode.get() == Configuration.RegenerativeItemsConsumptionMode.NOT_CROUCHING) {
-                return result;
+                return null;
             }
 
             if (!player.isShiftKeyDown() && Configuration.HEALTH.regenerativeItemsConsumptionMode.get() == Configuration.RegenerativeItemsConsumptionMode.CROUCHING) {
-                return result;
+                return null;
             }
 
             Optional<HealthManager> optional = CStatTinkerer.PLATFORM.getHealthManager(player);
@@ -98,11 +97,11 @@ public class HealthFeature {
 
                 FoodProperties food = CommonHelpers.getFoodProperties(stack);
                 if (food != null && player.canEat(food.canAlwaysEat())) {
-                    return result;
+                    return null;
                 }
 
                 if (stack.getUseAnimation() == ItemUseAnimation.DRINK) {
-                    return result;
+                    return null;
                 }
 
                 for (String itemString : Configuration.HEALTH.regenerativeItems.get()) {
@@ -121,13 +120,13 @@ public class HealthFeature {
                     if (manager.addHealth(player, amount, bypass)) {
                         ItemStack resultStack = stack.copy();
                         resultStack.shrink(1);
-                        result = InteractionResult.SUCCESS;
+                        return InteractionResult.SUCCESS;
                     }
                     break;
                 }
             }
         }
-        return result;
+        return null;
     }
 
     public ItemStack onItemUseInteractionCompleted(Level level, Player _player, ItemStack startStack, ItemStack endStack) {
