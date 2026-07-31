@@ -34,8 +34,13 @@ public class HungerFeature {
                 newPlayer.getFoodData().setFoodLevel(value);
             }
 
-            if (Configuration.HUNGER.keepSaturation.get() && (!Configuration.HUNGER.keepSaturationRestricted.get() || !oldPlayer.getFoodData().needsFood())) {
-                float value = Math.max(Configuration.HUNGER.lowestSaturation.get(), oldPlayer.getFoodData().getSaturationLevel());
+            if (Configuration.HUNGER.keepSaturation.get()) {
+                float value;
+                if (Configuration.HUNGER.keepSaturationRestricted.get() && oldPlayer.getFoodData().needsFood()) {
+                    value = 0.0f;
+                } else {
+                    value = Math.max(Configuration.HUNGER.lowestSaturation.get(), oldPlayer.getFoodData().getSaturationLevel());
+                }
                 newPlayer.getFoodData().setSaturation(value);
             }
         }
