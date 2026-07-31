@@ -5,7 +5,7 @@ license = "MIT"
 
 [[mods]]
 modId = "stattinkerer"
-version = "${version}"
+version = "${mod_version}"
 
 displayName = "Stat Tinkerer"
 authors = "Terrails"
@@ -20,13 +20,13 @@ config = "stattinkerer-common.mixins.json"
 [[dependencies.stattinkerer]]
 modId = "neoforge"
 type = "required"
-versionRange = "[21.0,)"
+versionRange = "[${min_neoforge_version},)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.stattinkerer]]
 modId = "minecraft"
 type = "required"
-versionRange = "[1.21,)"
+versionRange = "[${min_minecraft_version},)"
 ordering = "NONE"
 side = "CLIENT"

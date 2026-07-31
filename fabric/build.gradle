@@ -85,8 +85,9 @@ dependencies {
 processResources {
     var expandProps = [
             mod_version                 : project.version,
-            min_fabric_loader_version   : project.fabric_loader_version,
-            min_fabric_api_version      : project.fabric_api_version
+            min_minecraft_version       : project.min_minecraft_version,
+            min_fabric_loader_version   : project.min_fabric_loader_version,
+            min_fabric_api_version      : project.min_fabric_api_version
     ]
 
     inputs.properties expandProps
@@ -113,7 +114,7 @@ modrinth {
     versionNumber = "${project.version}"
     versionName = "[Fabric] ${project.minecraft_version}-v${project.version}"
     uploadFile = tasks.shadowJar.getArchiveFile().get()
-    gameVersions = [project.minecraft_version]
+    gameVersions = project.supported_minecraft_versions.split(",").toList()
     loaders = ["fabric"]
     dependencies {
         required.project "fabric-api"
@@ -130,7 +131,7 @@ tasks.register('publishCurseForge', TaskPublishCurseForge) {
     mainFile.releaseType = "release"
     mainFile.changelog = rootProject.file("CHANGELOG.md").text
     mainFile.changelogType = "markdown"
-    mainFile.addGameVersion("Client", "Server", project.minecraft_version)
+    mainFile.addGameVersion("Client", "Server", *project.supported_minecraft_versions.split(","))
     mainFile.addRequirement("fabric-api")
     mainFile.addModLoader("fabric")
 }
