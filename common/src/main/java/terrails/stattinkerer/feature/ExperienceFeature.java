@@ -21,7 +21,7 @@ public class ExperienceFeature {
         }
     }
 
-    public boolean playerDropExperience(Player player) {
+    public boolean dropExperience(Player player) {
         return Configuration.EXPERIENCE.drop.get();
     }
 }

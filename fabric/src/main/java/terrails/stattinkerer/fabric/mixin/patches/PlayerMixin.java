@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import terrails.stattinkerer.fabric.event.PlayerDeathEvent;
+import terrails.stattinkerer.fabric.event.PlayerDeathEvents;
 
 @Mixin(Player.class)
 public abstract class PlayerMixin extends LivingEntity {
@@ -21,8 +21,8 @@ public abstract class PlayerMixin extends LivingEntity {
      * @reason Experience drop event
      */
     @ModifyReturnValue(method = "isAlwaysExperienceDropper", at = @At("RETURN"))
-    public boolean isAlwaysExperienceDropper(boolean original) {
-        return original && PlayerDeathEvent.EXPERIENCE_DROP.invoker().playerDropExperience((Player) (Object) this);
+    public boolean isAlwaysExperienceDropper$stattinkerer(boolean original) {
+        return original && PlayerDeathEvents.EXPERIENCE_DROP.invoker().drop((Player) (Object) this);
     }
 
     /**

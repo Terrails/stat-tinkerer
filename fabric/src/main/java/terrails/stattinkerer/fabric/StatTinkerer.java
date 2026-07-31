@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import terrails.stattinkerer.CStatTinkerer;
 import terrails.stattinkerer.api.STMobEffects;
-import terrails.stattinkerer.fabric.event.PlayerDeathEvent;
+import terrails.stattinkerer.fabric.event.PlayerDeathEvents;
 import terrails.stattinkerer.feature.ExperienceFeature;
 import terrails.stattinkerer.feature.HungerFeature;
 import terrails.stattinkerer.feature.health.HealthFeature;
@@ -35,7 +35,6 @@ public class StatTinkerer implements ModInitializer {
     private void registerEvents() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             HealthFeature.INSTANCE.onPlayerJoinServer(handler.player);
-            ConfigHandler.CONFIG.load();
         });
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
             ExperienceFeature.INSTANCE.onPlayerClone(!alive, newPlayer, oldPlayer);
@@ -55,6 +54,6 @@ public class StatTinkerer implements ModInitializer {
         BlockEvents.USE_ITEM_ON.register((
                 (stack, state, level, pos, player, hand, result)
                         -> HungerFeature.INSTANCE.onBlockInteraction(state, level, player, result)));
-        PlayerDeathEvent.EXPERIENCE_DROP.register(ExperienceFeature.INSTANCE::playerDropExperience);
+        PlayerDeathEvents.EXPERIENCE_DROP.register(ExperienceFeature.INSTANCE::dropExperience);
     }
 }

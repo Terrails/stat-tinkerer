@@ -2,9 +2,9 @@ package terrails.stattinkerer.fabric.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import terrails.stattinkerer.feature.event.PlayerExpDropEvent;
+import net.minecraft.world.entity.player.Player;
 
-public interface PlayerDeathEvent {
+public interface PlayerDeathEvents {
 
     /**
      * <b>Event that is called when a player is about to drop xp.</b>
@@ -20,14 +20,20 @@ public interface PlayerDeathEvent {
      *     <li>false stops xp drop.</li>
      * </ul>
      */
-    Event<PlayerExpDropEvent> EXPERIENCE_DROP = EventFactory.createArrayBacked(PlayerExpDropEvent.class,
+    Event<ExperienceDropEvent> EXPERIENCE_DROP = EventFactory.createArrayBacked(ExperienceDropEvent.class,
             (listeners) -> (player) -> {
                 boolean ret = true;
-                for (PlayerExpDropEvent event : listeners) {
-                    if (!event.playerDropExperience(player) && ret) {
+                for (ExperienceDropEvent event : listeners) {
+                    if (!event.drop(player) && ret) {
                         ret = false;
                     }
                 }
                 return ret;
             });
+
+    @FunctionalInterface
+    interface ExperienceDropEvent {
+
+        boolean drop(Player player);
+    }
 }

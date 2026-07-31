@@ -79,7 +79,7 @@ public class EventHandler {
     @SubscribeEvent
     public static void onExperienceDrop(LivingExperienceDropEvent event) {
         if (event.getEntity() instanceof Player player) {
-            event.setCanceled(!ExperienceFeature.INSTANCE.playerDropExperience(player));
+            event.setCanceled(!ExperienceFeature.INSTANCE.dropExperience(player));
         }
     }
 }
